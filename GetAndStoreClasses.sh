@@ -6,9 +6,9 @@
 ########################
 
 
-####### 参数定义
-param_input_dir="$(pwd)/../SohuInk"
-param_output_file="$(pwd)/RenameClasses.cfg"
+####### 参数定义  使用外部参数，不能启用此定义
+#param_input_dir="$(pwd)/Test/Test"
+#param_output_file="$(pwd)/RenameClasses"
 
 
 ####### 参数解析
@@ -75,57 +75,62 @@ function read_implement_file_recursively {
 post_implement_file_handle() {
 	local wirte_to_file=$1
 	# 写入文件中
+
+echo "post_implement_file_handle:${wirte_to_file}";
 	echo "# 需要处理的类配置文件" > ${wirte_to_file}
+    
 	for(( i=0;i<${#implement_source_file_name_array[@]};i++)) 
 	do 
         class_file_name=${implement_source_file_name_array[i]};
+echo "class_file_name $class_file_name";
         if [[ $class_file_name == "SH"* && $class_file_name != "SHI"* ]]
         then
         echo "包含"
-        echo ${class_file_name} >> ${wirte_to_file}
+echo ${class_file_name} >> ${wirte_to_file}
         else
         echo "不包含"
         fi
 	done;
 
-	# 去重
-	wirte_to_file_bak="${wirte_to_file}.bak"
-	mv ${wirte_to_file} ${wirte_to_file_bak}
-	sort ${wirte_to_file_bak} | uniq > ${wirte_to_file}
-
-	# 过滤
-	mv ${wirte_to_file} ${wirte_to_file_bak}
-	echo "# Properties Configs Filtered" > ${wirte_to_file}
-	IFS_OLD=$IFS
-	IFS=$'\n'
-	# 上一行的内容
-	lastLine="";
-	for line in $(cat ${wirte_to_file_bak} | sed 's/^[ \t]*//g')
-	do
-		grep_result=$(grep ${line} ${blacklist_cfg_file})
-		category_judge_substring="\+"
-		if [[ ${#line} -le 6 ]] || [[ $(expr "$line" : '^#.*') -gt 0 ]] || [[ -n ${grep_result} ]] || [[ ${line} =~ ${category_judge_substring} ]]; then
-			# 长度小于等于6、注释内容的行、在黑名单中的内容、分类文件不处理
-			echo "less then 6 char line or comment line"
-		else
-			if [[ -n ${lastLine} ]]; then
-				# 上一行是非空白行
-				# 比较上一行内容是否是当前行的一部分，不是添加上一行
-				if [[ ${line} =~ ${lastLine} ]]; then
-					echo "${line} 和 ${lastLine} 有交集"
-				else
-					echo ${lastLine} >> ${wirte_to_file}
-				fi
-			fi
-			# 更新上一行
-			lastLine=${line}
-		fi	
-	done
-	IFS=${IFS_OLD}
+#    # 去重
+#    wirte_to_file_bak="${wirte_to_file}.bak"
+#    mv ${wirte_to_file} ${wirte_to_file_bak}
+#    sort ${wirte_to_file_bak} | uniq > ${wirte_to_file}
+#
+#    # 过滤
+#    mv ${wirte_to_file} ${wirte_to_file_bak}
+#    echo "# Properties Configs Filtered" > ${wirte_to_file}
+#    IFS_OLD=$IFS
+#    IFS=$'\n'
+#    # 上一行的内容
+#    lastLine="";
+#    for line in $(cat ${wirte_to_file_bak} | sed 's/^[ \t]*//g')
+#    do
+#        grep_result=$(grep ${line} ${blacklist_cfg_file})
+#        category_judge_substring="\+"
+#        if [[ ${#line} -le 6 ]] || [[ $(expr "$line" : '^#.*') -gt 0 ]] || [[ -n ${grep_result} ]] || [[ ${line} =~ ${category_judge_substring} ]]; then
+#            # 长度小于等于6、注释内容的行、在黑名单中的内容、分类文件不处理
+#            echo "less then 6 char line or comment line"
+#        else
+#            if [[ -n ${lastLine} ]]; then
+#                # 上一行是非空白行
+#                # 比较上一行内容是否是当前行的一部分，不是添加上一行
+#                if [[ ${line} =~ ${lastLine} ]]; then
+#                    echo "${line} 和 ${lastLine} 有交集"
+#                else
+#                    echo ${lastLine} >> ${wirte_to_file}
+#                fi
+#            fi
+#            # 更新上一行
+#            lastLine=${line}
+#        fi    
+#    done
+#    IFS=${IFS_OLD}
 
 	# 删除临时文件
 	rm -f ${wirte_to_file_bak}
 }
+
 
 read_implement_file_recursively ${param_input_dir}
 post_implement_file_handle ${param_output_file}

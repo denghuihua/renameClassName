@@ -8,19 +8,19 @@
 
 ####### 配置
 # 定义需要替换的类的查找目录，作为参数传递给GenRenameClasses.sh脚本使用，最终获取到的类名称保存到配置文件中，以给后续步骤使用
-class_search_dir="$(pwd)/../SohuInk/AD-MainPage"
-# class_search_dir="$(pwd)/../injectedContentKit/Business"
-# class_search_dir="/Users/aron/PuTaoWorkSpace/project/sscatch/sscatch/Classes/Business"
+#class_search_dir="$(pwd)/../SohuInk/AD-MainPage"
+class_search_dir="$(pwd)/Test/Test"
+#class_search_dir="/Users/aron/PuTaoWorkSpace/project/sscatch/sscatch/Classes/Business"
 # 配置文件
-cfg_file="$(pwd)/RenameClasses.cfg"
+cfg_file="$(pwd)/RenameClasses"
 
 # project.pbxproj文件目录，需要替换该配置文件中的类的名称配置
-pbxproj_dir="$(pwd)/../SohuInk.xcodeproj"
+pbxproj_dir="$(pwd)/Test/Test.xcodeproj"
 # pbxproj_dir="$(pwd)/../InjectedContentKit.xcodeproj"
 # pbxproj_dir="/Users/aron/PuTaoWorkSpace/project/sscatch/sscatch.xcodeproj"
 
 # 定义该目录下的文件需要进行批量替换处理
-class_name_replace_dir="$(pwd)/../SohuInk"
+class_name_replace_dir="$(pwd)/Test/Test"
 # class_name_replace_dir="$(pwd)/../InjectedContentKit"
 # class_name_replace_dir="/Users/aron/PuTaoWorkSpace/project/sscatch/sscatch/Classes/Business"
 
@@ -39,6 +39,7 @@ class_prefix="SHI"
 ####### 配置检查处理
 
 # 导入工具脚本
+# shell模块化和复用 http://arganzheng.iteye.com/blog/1174470 源（点）导入语法 导入一遍就等于文件执行一遍
 . ./FileUtil.sh
 . ./EnvCheckUtil.sh
 
@@ -182,10 +183,11 @@ mv -f $find_result $new_file_path
 done
 }
 
-# 获取需要重命名的类名称，保存到配置文件中
-#./GetAndStoreClasses.sh\
-#-i ${class_search_dir}\
-#-o ${cfg_file}
+# 获取需要重命名的类名称，保存到配置文件中 以下两种格式都可以，\前需要加空格
+#./GetAndStoreClasses.sh -i ${class_search_dir} -o ${cfg_file}
+./GetAndStoreClasses.sh \
+-i ${class_search_dir} \
+-o ${cfg_file}
 
 # 读取配置文件内容保存到数组中
 read_config_content_to_array
